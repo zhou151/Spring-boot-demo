@@ -1,0 +1,364 @@
+所用技术 Spring ioc, Spring Mvc , Hikaricp 连接池, lombok , mybatis (全注解+接口),
+		 PageHelper 分页插件 , Server 3.0 ,异常(500)全局捕获 404页面设置
+		 Spring Aop 切面编程, webJars , log4j2 日志, AJAX文件上传demo
+		 spring 事务管理  电子邮件发送,
+一 Maven仓库搭建,引入依赖
+	....
+----------------------------------------------------------------------------------------------		
+二 Spring boot启动类
+	@SpringBootApplication    //启动自动配置依赖注入+扫描同包中其他类
+	@ComponentScan(basePackages ={ "****", "*****" })  //扫描bean组件
+	@MapperScan(basePackages ={ "com.zhou.mapper" })	//扫描映射包
+	@EnableTransactionManagement //开启事务
+	@ServletComponentScan 扫描servlet包，servlet3.0标准
+	---------------------------------------------------
+	public static void main(String[] args)
+	{
+		SpringApplication.run(SpringStart.class, args);
+	}
+----------------------------------------------------------------------------------------------		
+三 整合Hikaricp连接池
+	application.properties文件配置示例
+		spring.datasource.type=com.zaxxer.hikari.HikariDataSource
+		spring.datasource.url=jdbc:mysql://localhost:3306/taifu?serverTimezone=Hongkong&useUnicode=true&useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true
+		spring.datasource.username=root
+		spring.datasource.password=******
+		spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+		spring.datasource.hikari.connection-test-query=SELECT 1
+		spring.datasource.hikari.auto-commit=true
+		spring.datasource.hikari.maximum-pool-size=25
+		spring.datasource.hikari.minimum-idle=5
+		spring.datasource.hikari.connection-timeout=30000
+----------------------------------------------------------------------------------------------			
+四 Spring mvc 整合
+	1.整合jsp
+	application.properties文件配置示例
+		spring.mvc.view.prefix=/
+		spring.mvc.view.suffix=.jsp
+		spring.thymeleaf.cache=false
+		spring.thymeleaf.enabled=false
+	---------------------------------------------------
+	修改pom.xml添加外部tomcat和serverlet依赖
+	---------------------------------------------------
+	@Controller 控制器类 用于映射jsp页面
+	@RequestMapping("/index")
+    public String mvc1(ModelMap model) {
+		model.addAttribute("message", "Hello Spring MVC Framework!");
+        return "index";
+    }
+----------------------------------------------------------------------------------------------		
+五 添加lombok插件
+	<dependency>
+		<groupId>org.projectlombok</groupId>
+		<artifactId>lombok</artifactId>
+    </dependency>
+	下载jar包放在eclipse目录,并cmd执行安装
+	@Data 自动完成get,set
+----------------------------------------------------------------------------------------------		
+六 整合mybatis数据库框架(全注解版本)
+	<dependency>
+		<groupId>org.mybatis.spring.boot</groupId>
+		<artifactId>mybatis-spring-boot-starter</artifactId>
+		<version>1.3.1</version>
+	</dependency>
+	---------------------------------------------------
+	com.zhou.controller 控制器层 @Controller
+	com.zhou.entity  实体层  @bean	
+	com.zhou.mapper  映射层  @mapper
+	com.zhou.service 业务层  @Service
+	---------------------------------------------------
+	/*不带参数查询demo*/
+	@Select("select * from tab")
+	List<User> select();
+	---------------------------------------------------
+	/*带参insert*/
+	@Insert("insert into tab(name,pass) values(#{name},#{pass})")
+	int insertUser(@Param("name")  String name,@Param("pass")  String pass);
+----------------------------------------------------------------------------------------------	
+七 开启事务
+	启动类加 @EnableTransactionManagement
+	@Service 类上加上@Transactional表明本类所有方法开启事务，异常时回滚数据
+	@Transactional(readOnly=true) 只读=是
+----------------------------------------------------------------------------------------------		
+八 开启外置tomcat(打成War包)
+	pom 改成war包
+	<!-- 移除嵌入式tomcat插件因为要用jsp,所以最下面引入外部tomcat -->
+		<exclusions>
+			<exclusion>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-tomcat</artifactId>
+			</exclusion>
+		</exclusions>
+	添加 <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <scope>provided</scope>
+	    </dependency>
+	    <dependency>
+	      <groupId>javax.servlet</groupId>
+	      <artifactId>jstl</artifactId>
+	    </dependency>
+	    <!-- 外部tomcat的支持,支持打成war包运行.-->
+	    <dependency>
+	      <groupId>org.springframework.boot</groupId>
+	      <artifactId>spring-boot-starter-tomcat</artifactId>
+	    </dependency>
+	    <dependency>
+	      <groupId>org.apache.tomcat.embed</groupId>
+	      <artifactId>tomcat-embed-jasper</artifactId>
+   		</dependency>
+		---------------------------------------------------
+		server.servlet.context-path=/demo  //配置文件项目名配置
+		server.port=8080 //端口号修改
+----------------------------------------------------------------------------------------------	
+九 集成PageHelper分页插件
+	application.properties 配置如下
+	---------------------------------------------------
+	pagehelper.helper-dialect=mysql
+	pagehelper.reasonable=true
+	pagehelper.support-methods-arguments=true
+	pagehelper.params=count=countSql
+	pagehelper.page-size-zero=true
+	---------------------------------------------------
+	@Service 层代码
+	public PageInfo<User> select (int page,int pageSize)
+	{
+		PageHelper.startPage(page,pageSize);
+		List<User> name=usermapper.select();
+		PageInfo<User> pageInfo = new PageInfo<User>(name);
+		return pageInfo;
+	}
+----------------------------------------------------------------------------------------------	
+十 servlet 组件 集成 
+	方式一 : Server 3.0标准方式
+	
+		启动类 @ServletComponentScan(basePackages={"com.zhou.servlet"}) 扫包
+		Servlet 类加上 @WebServlet("/TestServlet")
+		Filter拦截器类 加上 @WebFilter("/*")
+		Listener监听器类 加上 @WebListener
+		
+	方式二 : 注入Spring Bean中
+	
+		@Bean //服务Servlet bean
+		public ServletRegistrationBean testServlet()
+		{
+			ServletRegistrationBean bean=new ServletRegistrationBean();
+			bean.setServlet(new TestServlet());
+			bean.addUrlMappings("/TestServlet");
+			return bean;
+		}
+		---------------------------------------------------
+		@Bean // 过滤器Filter bean
+		public FilterRegistrationBean testFilter()
+		{
+			FilterRegistrationBean bean = new FilterRegistrationBean();
+			bean.setFilter(new TestFilter());
+			bean.addUrlPatterns("/*");
+			return bean;
+		}
+		---------------------------------------------------
+		@Bean  //监听器Listener bean
+		public ServletListenerRegistrationBean<TestListener> testListener()
+		{
+			ServletListenerRegistrationBean<TestListener> bean = new  ServletListenerRegistrationBean<TestListener>();
+			bean.setListener(new TestListener());
+			return bean;
+		}
+----------------------------------------------------------------------------------------------	
+十一 异常全局捕获
+	异常码 500
+		参考ExceptionConfig
+		@ControllerAdvice(basePackages= {"com.zhou.controller"}) //需要捕获异常的包
+		@ExceptionHandler(RuntimeException.class)
+		@ResponseBody
+		public Map<String,Object> errorJson(RuntimeException e,HandlerMethod h)
+		{
+			Map<String,Object> msg=new  HashMap<String,Object>();
+			msg.put("异常码","500");
+			msg.put("系统异常","☹☹☹☹");
+			logger.warn("发生异常，异常信息--->>> {}",e.getMessage());
+			return msg;
+		}
+	异常码 404 直接返回404页面
+		@Controller
+		public class MyConteoller implements ErrorController
+			private static final String ERROR_PATH = "/error";
+			@Override
+			public String getErrorPath()
+			{
+				// TODO Auto-generated method stub
+				return ERROR_PATH;
+			}
+			@RequestMapping(value=ERROR_PATH) 
+			public String handleError(){ 
+				return "404"; 
+			}
+			//发生项目里的404会访问404.jsp页面
+----------------------------------------------------------------------------------------------	
+十二 去掉静态资源的拦截(拦截器配置后会拦截所有请求,不配置没这个问题)
+		编辑web.xml
+		<servlet-mapping>  
+			<servlet-name>default</servlet-name>   
+			<url-pattern>/fonts/*</url-pattern>
+			<url-pattern>/font/*</url-pattern>
+			<url-pattern>/img/*</url-pattern>
+			<url-pattern>/js/*</url-pattern>
+			<url-pattern>/webjars/*</url-pattern>
+	   </servlet-mapping>    
+----------------------------------------------------------------------------------------------	
+十三 AOP 切面编程
+	pom依赖 
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+	---------------------------------------------------
+	切面类前添加	@Component	@Aspect 
+	---------------------------------------------------
+	//下面表达式表示要切面的为com.zhou.controller包下所有类，所有方法
+	@Pointcut("execution(public * com.zhou.controller..*.*(..))")
+	public void webLog() {}	//切入点
+	---------------------------------------------------
+	@Before("webLog()")	//方法执行前切入
+	public void doBefore(JoinPoint joinPoint){}
+	---------------------------------------------------
+	@After("webLog()")	//方法return前切入
+    public void doAfterAdvice(JoinPoint joinPoint)
+	---------------------------------------------------
+	@AfterReturning(returning = "ret", pointcut = "webLog()")
+	//方法return后切入ret方法的返回值，可以对返回值进行处理
+	public void doAfterReturning(Object ret) 
+----------------------------------------------------------------------------------------------	
+十四 webJars 使用(开源js,css引入)
+	引入Jquery1.8.3例子
+	<dependency>
+		<groupId>org.webjars</groupId>
+		<artifactId>jquery</artifactId>
+		<version>1.8.3</version>
+	</dependency>
+	使用例子
+	<script src="/demo/webjars/jquery/1.8.3/jquery.js"></script> 
+	server.servlet.context-path=/demo  这里设置了项目名
+	src 解释 /项目名/webjars/jquery/1.8.3/jquery.js
+----------------------------------------------------------------------------------------------
+十五 log4j2集成
+		排除自带的logging
+		<exclusion>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-logging</artifactId>
+		</exclusion>
+		引入
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+		编写 log4j2-spring.xml
+		log4j.appender.file.encoding=UTF-8
+		注意设置编码，不然日志文件中文乱码
+		导入包，注意不要导错
+			import org.apache.logging.log4j.LogManager;
+			import org.apache.logging.log4j.Logger;
+		要用日志的地方
+			private static Logger logger = LogManager.getLogger(WebAop.class);
+		<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+----------------------------------------------------------------------------------------------
+十六 AJAX文件上传demo
+	前端
+		<form id="studentAddForm" method="post" enctype="multipart/form-data" onsubmit="return false">
+	js 
+		var formData = new FormData($("#studentAddForm")[0]);
+		data : formData,
+		cache: false,			//设置为 false 将不缓存此页面。
+		async: false,			//异步关闭
+		processData : false,  //必须false才会避开jQuery对 formdata 的默认处理
+		contentType : false,  //必须false才会自动加上正确的Content-Type
+	后台
+		/**
+	 * 
+	 * @fun-name studentInfoSave
+	 * @return-type Map<String,Object>
+	 * @author Mr_zhou
+	 * @date 2018年8月12日 上午1:17:32
+	 * @param request  可以用来得到项目某个文件夹的绝对地址
+	 * @param file	用户上传的文件
+	 * @param name	普通文字RequestParam
+	 * @param pass	
+	 * @return	
+	 * @throws IOException
+	 * TODO	Ajax传文件demo,返回json数据
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/saveStudentInfo", method= RequestMethod.POST)
+	public Map<String,String> studentInfoSave(HttpServletRequest request,@RequestParam("file") 
+	MultipartFile file,@RequestParam("name") String name,@RequestParam("pass") String pass) throws IOException {
+		Map<String,String> msg=new  HashMap<String,String>();
+		//拿到文件名。注意这里编码
+		String filename = URLEncoder.encode(file.getOriginalFilename(), "utf-8");
+		//得到文件后缀
+	    String suffix=filename.substring(filename.lastIndexOf("."));
+	    //类型判断
+	    if(!suffix.equals(".png")&&!suffix.equals(".jpg")&&!suffix.equals(".jpeg")) 
+	    {msg.put("msg","请上传图片!支持.png.jpg.jpeg");return msg;}
+		/**拿到文件大小 友情提示
+		 * 1MB=1048576B
+		 * 2MB=2097152
+		 * 3MB=3145728
+		 * 4MB=4194304
+		 * 5MB=5242880
+		 */
+		int fileSize=(int)file.getSize();
+		//传入空文件提示
+		if(file.isEmpty()){msg.put("msg","请选择文件");return msg;}		
+		//文件大于-5MB-的提示
+		else if(fileSize>5242880){msg.put("msg","文件过大，请上传小于5MB的文件");return msg;}
+		
+		request.getServletContext().getRealPath("/img"); 
+		
+		//拿到文件输入流
+	    InputStream inputStream = file.getInputStream();
+	    //随机数作为文件名，这里并没有使用
+	    String randStr=UUID.randomUUID().toString();
+	    //保存文件的方法
+	    saveFileFromInputStream(inputStream,"D:/abc",filename,fileSize);
+	    //返回的json
+		msg.put("msg","ok--"+name+"--"+pass);
+		/**************测试*****************/
+		return msg;
+	}
+	/**
+	 * 
+	 * @fun-name SaveFileFromInputStream
+	 * @return-type void
+	 * @author Mr_zhou
+	 * @date 2018年8月12日 上午12:56:51
+	 * @param stream  文件流
+	 * @param path	 文件保存地址
+	 * @param filename	文件名字
+	 * @param fileSize	文件大小(单位字节B)
+	 * @throws IOException
+	 * TODO	保存前端传入的文件
+	 */
+	public void saveFileFromInputStream(InputStream stream,String path,String filename,int fileSize) throws IOException
+    {      
+        FileOutputStream fs=new FileOutputStream( path + "/"+ filename);
+        byte[] buffer =new byte[fileSize];
+        int byteread = -1; 
+        for (;(byteread=stream.read(buffer))!=-1;)
+        {
+           fs.write(buffer,0,byteread);
+           fs.flush();
+        } 
+        fs.close();
+        stream.close();      
+    }  
+十七 QQ电子邮件的使用
+	<dependency>
+	    <groupId>javax.mail</groupId>
+	    <artifactId>mail</artifactId>
+	    <version>1.5.0-b01</version>
+	</dependency>
+----------------------------------------------------------------------------------------------	
+其他—打包命令
+	项目名鼠标右键 -> show in -> terminal
+	输入mvn clean package
+	target目录下war包就是了
