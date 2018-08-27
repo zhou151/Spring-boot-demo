@@ -19,7 +19,7 @@
                      filePattern="${sys:user.home}/logs/$${date:yyyy-MM}/debug-%d{yyyy-MM-dd}-%i.log">
             <Filters>
                 <ThresholdFilter level="info" onMatch="DENY" onMismatch="NEUTRAL"/>
-                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="NEUTRAL"/>
+                <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
             </Filters>
             <PatternLayout charset="UTF-8" pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
             <Policies>
@@ -83,8 +83,9 @@
             <appender-ref ref="RollingFileWarn"/>
             <appender-ref ref="RollingFileError"/>
             <appender-ref ref="RollingFileDebug"/>
+            <appender-ref ref="RollingFileTrace"/>
         </root>
     </loggers>
- 
+
 </configuration>
 
