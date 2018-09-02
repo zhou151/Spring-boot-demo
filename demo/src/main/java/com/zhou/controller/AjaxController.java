@@ -92,11 +92,10 @@ public class AjaxController
 	public void saveFileFromInputStream(InputStream stream,String path,String filename,int fileSize) throws IOException
     {      
         FileOutputStream fs=new FileOutputStream( path + "/"+ filename);
-        byte[] buffer =new byte[fileSize];
-        int byteread = -1; 
-        for (;(byteread=stream.read(buffer))!=-1;)
+        byte[] buffer =new byte[8];
+        for (int len=0;(len=stream.read(buffer))!=-1;)
         {
-           fs.write(buffer,0,byteread);
+           fs.write(buffer,0,len);
            fs.flush();
         } 
         fs.close();
