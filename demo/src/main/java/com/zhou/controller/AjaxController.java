@@ -89,6 +89,7 @@ public class AjaxController
 	 * @throws IOException
 	 * TODO	保存前端传入的文件
 	 */
+	
 	public void saveFileFromInputStream(InputStream stream,String path,String filename,int fileSize) throws IOException
     {      
         FileOutputStream fs=new FileOutputStream( path + "/"+ filename);
