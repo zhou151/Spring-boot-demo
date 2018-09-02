@@ -76,8 +76,7 @@ public class AjaxController
 		/**************测试*****************/
 		return msg;
 	}
-	/**
-	 * 
+	/** 
 	 * @fun-name SaveFileFromInputStream
 	 * @return-type void
 	 * @author Mr_zhou
