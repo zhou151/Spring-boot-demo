@@ -1,5 +1,7 @@
 package com.zhou.controller;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +9,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
@@ -70,7 +73,7 @@ public class AjaxController
 	    //随机数作为文件名，这里并没有使用
 	    String randStr=UUID.randomUUID().toString();
 	    //保存文件的方法
-	    saveFileFromInputStream(inputStream,"D:/abc",filename,fileSize);
+	    saveFileFromInputStream(inputStream,"D:/abc",randStr+suffix);
 	    //返回的json
 		msg.put("msg","ok--"+name+"--"+pass);
 		/**************测试*****************/
@@ -88,17 +91,18 @@ public class AjaxController
 	 * @throws IOException
 	 * TODO	保存前端传入的文件
 	 */
-	public void saveFileFromInputStream(InputStream stream,String path,String filename,int fileSize) throws IOException
+	public void saveFileFromInputStream(InputStream stream,String path,String filename) throws IOException
     {      
-        FileOutputStream fs=new FileOutputStream( path + "/"+ filename);
-        byte[] buffer =new byte[8];
-        for (int len=0;(len=stream.read(buffer))!=-1;)
+		DataInputStream dataInputStream = new DataInputStream (stream);
+        DataOutputStream dataOutputStream = new DataOutputStream (new FileOutputStream( path + "/"+ filename));
+        byte[] buffer =new byte[16];
+        for (int len=0;(len=dataInputStream.read(buffer))!=-1;)
         {
-           fs.write(buffer,0,len);
-           fs.flush();
+        	dataOutputStream.write(buffer,0,len);
+        	dataOutputStream.flush();
         } 
-        fs.close();
-        stream.close();      
+        dataOutputStream.close();
+        dataInputStream.close();      
     }     
 
 }
