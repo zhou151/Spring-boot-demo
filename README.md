@@ -17,4 +17,4 @@
  
  * > [webjar使用demo](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/webapp/index.jsp)
 
-* >[json遍历+分页实现逻辑](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/webapp/js/index.js)
+* >[json数据遍历+分页实现逻辑](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/webapp/js/index.js)
