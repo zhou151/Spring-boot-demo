@@ -17,4 +17,6 @@
  
  * > [webjar使用demo](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/webapp/index.jsp)
 
-* >分页功能 [json数据遍历+分页实现逻辑(前端)](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/webapp/js/index.js)
+* >分页功能 [json数据遍历+分页实现逻辑(前端)](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/webapp/js/index.js) |
+[分页后台插件使用](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/java/com/zhou/service/UserService.java)
+ 
