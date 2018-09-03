@@ -14,3 +14,5 @@
   [前端代码](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/webapp/page/ajax-test.html) |
   [后端代码](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/java/com/zhou/controller/AjaxController.java)
  * > [java生成验证码demo](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/java/com/zhou/controller/DrawImage.java)
+ 
+ * > [webjar使用demo](https://github.com/zhou151/Spring-boot-demo/blob/master/demo/src/main/webapp/index.jsp)
