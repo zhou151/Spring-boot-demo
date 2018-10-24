@@ -10,6 +10,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.zhou.entity.User;
 import com.zhou.mapper.UserMapper;
+import com.zhou.service.inter.UserServiceInter;
 /**
  * 
  * @author Mr_zhou
@@ -19,27 +20,24 @@ import com.zhou.mapper.UserMapper;
  */
 @Service
 @Transactional
-public class UserService
+public class UserService implements UserServiceInter
 {
 	@Autowired
 	private UserMapper usermapper;
 	
+	/* (non-Javadoc)
+	 * @see com.zhou.service.UserServiceInter#insertUser(java.lang.String, java.lang.String)
+	 */
+	@Override
 	public int insertUser(String name,String pass)
 	{
 		int result =usermapper.insertUser(name, pass);
 		return result;
 	}
-	/**
-	 * 
-	 * @fun-name select
-	 * @return-type List<User>
-	 * @author Mr_zhou
-	 * @date 2018年8月7日 上午10:29:19
-	 * @param page 当前页
-	 * @param pagesize  当前展示多少页
-	 * @return
-	 * TODO readOnly=true 只读=是
+	/* (non-Javadoc)
+	 * @see com.zhou.service.UserServiceInter#select(int, int)
 	 */
+	@Override
 	@Transactional(readOnly=true)
 	public PageInfo<User> select (int page,int pageSize)
 	{
