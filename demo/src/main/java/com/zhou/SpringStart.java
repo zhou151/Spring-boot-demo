@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 //-------------------------------------------------------
 @ComponentScan(basePackages ={ "com.zhou.controller", "com.zhou.service" ,"com.zhou.config","com.zhou.aop"})
 //-------------------------------------------------------
-@MapperScan(basePackages ={ "com.zhou.mapper" })
+@MapperScan(basePackages ={ "com.zhou.dao.mapper" })
 //-------------------------------------------------------
 @ServletComponentScan(basePackages={"com.zhou.servlet"})
 //-------------------------------------------------------

@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.zhou.dao.mapper.UserMapper;
 import com.zhou.entity.User;
-import com.zhou.mapper.UserMapper;
 import com.zhou.service.inter.UserServiceInter;
 /**
  * 
