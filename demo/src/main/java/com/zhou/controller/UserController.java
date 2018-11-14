@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.github.pagehelper.PageInfo;
 import com.zhou.entity.User;
-import com.zhou.service.inter.UserServiceInter;
+import com.zhou.service.UserService;
 /**
  * 
  * @author Mr_zhou
@@ -20,7 +20,7 @@ import com.zhou.service.inter.UserServiceInter;
 public class UserController
 {
 	@Autowired
-	private UserServiceInter userService ;
+	private UserService userService ;
 	@RequestMapping("/inuser")
 	public int insertUser(String name,String pass)
 	{
